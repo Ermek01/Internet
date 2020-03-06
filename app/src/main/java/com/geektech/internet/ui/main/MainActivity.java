@@ -22,7 +22,7 @@ import static com.geektech.internet.BuildConfig.APP_ID;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView tvCurrentWeather, tvCityName;
+    private TextView tvCurrentWeather, tvCityName, tvMax, tvMin, tvDesc;
     private RecyclerView recyclerView;
     private ForecastAdapter adapter;
 
@@ -31,9 +31,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupViews();
+        setupRecyclerView();
         loadCurrentWeather();
         loadForecastWeather();
-        fillCurrentWeather();
+    }
+
+    private void setupRecyclerView() {
+        adapter = new ForecastAdapter();
+        recyclerView.setAdapter(adapter);
     }
 
     private void loadForecastWeather() {
@@ -44,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
                 .enqueue(new Callback<ForecastWeather>() {
                     @Override
                     public void onResponse(Call<ForecastWeather> call, Response<ForecastWeather> response) {
-                        Log.d("sdasad", "aadadddsdssf");
+                        if (response.isSuccessful() && response.body() != null){
+                            adapter.update(response.body().getList());
+                        }
                     }
 
                     @Override
@@ -63,8 +70,13 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(Call<CurrentWeather> call, Response<CurrentWeather> response) {
                         if (response.isSuccessful() && response.body() != null){
                             CurrentWeather weather = response.body();
-                            tvCurrentWeather.setText(weather.getMain().getTemp().toString());
-                            tvCityName.setText(weather.getName());
+                            tvCurrentWeather.setText(
+                                    getString(R.string.celcius,
+                                            weather.getMain().getTemp().toString()));
+                            tvCityName.setText(weather.getName() +  ", " + weather.getSys().getCountry());
+                            tvMax.setText(weather.getMain().getTempMax().toString());
+                            tvMin.setText(weather.getMain().getTempMin().toString());
+                            tvDesc.setText(weather.getWeather().get(0).getDescription());
                         }
                         else {
                             Toast.makeText(MainActivity.this, "error", Toast.LENGTH_SHORT).show();
@@ -78,12 +90,12 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void fillCurrentWeather(){
-    }
-
     private void setupViews() {
         tvCurrentWeather = findViewById(R.id.tvCurrentWeather);
         tvCityName = findViewById(R.id.tvCityName);
         recyclerView = findViewById(R.id.recyclerview);
+        tvMax = findViewById(R.id.tvWeatherMax);
+        tvMin = findViewById(R.id.tvWeatherMin);
+        tvDesc = findViewById(R.id.tvDesc);
     }
 }
