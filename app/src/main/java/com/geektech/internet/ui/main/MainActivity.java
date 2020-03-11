@@ -3,11 +3,14 @@ package com.geektech.internet.ui.main;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.geektech.internet.R;
 import com.geektech.internet.data.internet.RetrofitBuilder;
 import com.geektech.internet.data.pojo.CurrentWeather;
@@ -22,7 +25,8 @@ import static com.geektech.internet.BuildConfig.APP_ID;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView tvCurrentWeather, tvCityName, tvMax, tvMin, tvDesc;
+    private TextView tvCurrentWeather, tvCityName, tvMax, tvMin, tvDesc, tvPressure, tvHumidity, tvSunrise, tvSunset;
+    private ImageView imageView;
     private RecyclerView recyclerView;
     private ForecastAdapter adapter;
 
@@ -66,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 .getService()
                 .getCurrentWeather("Bishkek", APP_ID, "metric")
                 .enqueue(new Callback<CurrentWeather>() {
+                    @SuppressLint({"SetTextI18n"})
                     @Override
                     public void onResponse(Call<CurrentWeather> call, Response<CurrentWeather> response) {
                         if (response.isSuccessful() && response.body() != null){
@@ -77,6 +82,12 @@ public class MainActivity extends AppCompatActivity {
                             tvMax.setText(weather.getMain().getTempMax().toString());
                             tvMin.setText(weather.getMain().getTempMin().toString());
                             tvDesc.setText(weather.getWeather().get(0).getDescription());
+                            tvPressure.setText(getString(R.string.pressures, weather.getMain().getPressure().toString()));
+                            tvSunrise.setText(weather.getSys().getSunrise().toString());
+                            tvSunset.setText(weather.getSys().getSunset().toString());
+                            Glide.with(getApplicationContext())
+                                    .load("http://openweathermap.org/img/wn/" + weather.getWeather().get(0)
+                                            .getIcon() + "@2x.png").into(imageView);
                         }
                         else {
                             Toast.makeText(MainActivity.this, "error", Toast.LENGTH_SHORT).show();
@@ -97,5 +108,10 @@ public class MainActivity extends AppCompatActivity {
         tvMax = findViewById(R.id.tvWeatherMax);
         tvMin = findViewById(R.id.tvWeatherMin);
         tvDesc = findViewById(R.id.tvDesc);
+        tvPressure = findViewById(R.id.tvPressure);
+        tvHumidity = findViewById(R.id.tvHumidity);
+        tvSunrise = findViewById(R.id.tvSunrise);
+        tvSunset = findViewById(R.id.tvSunset);
+        imageView = findViewById(R.id.imageview);
     }
 }

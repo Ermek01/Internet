@@ -2,8 +2,18 @@
     <string name="app_name">Internet</string>
     
     <string name="celcius">%1$s C</string>
+    <string name="pressures">%1$smb</string>
+    <string name="humidities">%1$s%</string>
     <string name="today">Today</string>
     <string name="now">Now</string>
     <string name="max">Max</string>
     <string name="min">Min</string>
+    <string name="wind">Wind</string>
+    <string name="this_week">This Week</string>
+    <string name="cloud">cloud</string>
+    <string name="humidity">Humidity</string>
+    <string name="cloudiness">Cloudiness</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="sunset">Sunset</string>
+    <string name="pressure">Pressure</string>
 </resources>
